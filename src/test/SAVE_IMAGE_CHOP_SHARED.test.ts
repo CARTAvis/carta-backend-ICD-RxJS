@@ -12,21 +12,31 @@ let readFileTimeout: number = config.timeout.readFile;
 let saveFileTimeout: number = config.timeout.saveFile;
 
 interface AssertItem {
-    fileOpen: CARTA.IOpenFile;
+    fileOpen: CARTA.IOpenFile[];
     setRegion: CARTA.ISetRegion[];
     saveFile: CARTA.ISaveFile[];
     exportedFileOpen: CARTA.IOpenFile[];
     setImageChannel: CARTA.ISetImageChannels;
     shapeSize: string[];
 }
+
 let assertItem: AssertItem = {
-    fileOpen: {
-        directory: testSubdirectory,
-        file: "M17_SWex.fits",
-        hdu: "",
-        fileId: 0,
-        renderMode: CARTA.RenderMode.RASTER,
-    },
+    fileOpen: [
+        {
+            directory: testSubdirectory,
+            file: "M17_SWex.fits",
+            hdu: "",
+            fileId: 0,
+            renderMode: CARTA.RenderMode.RASTER,
+        },
+        {
+            directory: testSubdirectory,
+            file: "M17_SWex.image",
+            hdu: "",
+            fileId: 1,
+            renderMode: CARTA.RenderMode.RASTER,
+        },
+    ],
     setRegion: [
         {
             fileId: 0,
@@ -49,38 +59,38 @@ let assertItem: AssertItem = {
     ],
     saveFile: [
         {
-            fileId: 0,
-            outputFileName: "M17_SWex_Chop.fits",
+            fileId: 1,
+            outputFileName: "M17_SWex_Chop_Shared.fits",
             outputFileType: CARTA.FileType.FITS,
             keepDegenerate: true,
         },
         {
-            fileId: 0,
-            outputFileName: "M17_SWex_Chop.image",
+            fileId: 1,
+            outputFileName: "M17_SWex_Chop_Shared.image",
             outputFileType: CARTA.FileType.CASA,
             keepDegenerate: true,
         },
     ],
     exportedFileOpen: [
         {
-            file: "M17_SWex_Chop.fits",
+            file: "M17_SWex_Chop_Shared.fits",
             hdu: "",
-            fileId: 1,
+            fileId: 2,
             renderMode: CARTA.RenderMode.RASTER,
         },
         {
-            file: "M17_SWex_Chop.image",
+            file: "M17_SWex_Chop_Shared.image",
             hdu: "",
-            fileId: 1,
+            fileId: 2,
             renderMode: CARTA.RenderMode.RASTER,
         },
     ],
     setImageChannel: {
-        fileId: 1,
+        fileId: 2,
         channel: 0,
         stokes: 0,
         requiredTiles: {
-            fileId: 1,
+            fileId: 2,
             compressionType: CARTA.CompressionType.ZFP,
             compressionQuality: 11,
             tiles: [0],
@@ -88,8 +98,9 @@ let assertItem: AssertItem = {
     },
     shapeSize: ['[351, 351, 25, 1]','[351, 351, 25, 1]'],
 }
+
 let basepath: string;
-describe("SAVE_IMAGE_CHOP: Exporting of a chopped image", () => {
+describe("EXPORT_IMAGE_CHOP_SHARED: Exporting of a chopped image via the shared region", () => {
     const msgController = MessageController.Instance;
     describe(`Register a session`, () => {
         beforeAll(async ()=> {
@@ -100,22 +111,27 @@ describe("SAVE_IMAGE_CHOP: Exporting of a chopped image", () => {
         test(`Get basepath and modify the directory path`, async () => {
             let fileListResponse = await msgController.getFileList("$BASE",0);
             basepath = fileListResponse.directory;
-            assertItem.fileOpen.directory = basepath + "/" + assertItem.fileOpen.directory;
+            assertItem.fileOpen.map((input,index) => {
+                assertItem.fileOpen[index].directory = basepath + "/" + assertItem.fileOpen[index].directory; 
+            });
+            msgController.closeFile(-1);
         });
 
-        test(`Open image`, async () => {
-            msgController.closeFile(-1);
-            let OpenFileResponse = await msgController.loadFile(assertItem.fileOpen);
-            let RegionHistogramData = await Stream(CARTA.RegionHistogramData,1);
-
-            expect(OpenFileResponse.success).toBe(true);
-            expect(OpenFileResponse.fileInfo.name).toEqual(assertItem.fileOpen.file);
-        }, readFileTimeout);
+        assertItem.fileOpen.map((input,index) => {
+            test(`Open image of "${input.file}"`, async () => {
+                let OpenFileResponse = await msgController.loadFile(input);
+                let RegionHistogramData = await Stream(CARTA.RegionHistogramData,1);
+    
+                expect(OpenFileResponse.success).toBe(true);
+                expect(OpenFileResponse.fileInfo.name).toEqual(assertItem.fileOpen[index].file);
+            }, readFileTimeout);
+        });
 
         assertItem.setRegion.map((region, regionIndex) => {
             describe(`set a ${CARTA.RegionType[region.regionInfo.regionType]} region`, () => {
+                let SetRegionAck: any;
                 test(`set region`, async () => {
-                    let SetRegionAck = await msgController.setRegion(region.fileId, region.regionId, region.regionInfo);
+                    SetRegionAck = await msgController.setRegion(region.fileId, region.regionId, region.regionInfo);
                     expect(SetRegionAck.success).toEqual(true);
                 }, saveFileTimeout);
 
@@ -123,7 +139,7 @@ describe("SAVE_IMAGE_CHOP: Exporting of a chopped image", () => {
                     describe(`try to save image "${saveFile.outputFileName}"`, () => {
                         let OpenFileAck: CARTA.IOpenFileAck
                         test(`save image`, async () => {
-                            let saveFileResponse = await msgController.saveFile(saveFile.fileId, tmpdirectory, saveFile.outputFileName, saveFile.outputFileType, regionIndex+1, saveFile.channels, saveFile.stokes, saveFile.keepDegenerate, null);
+                            let saveFileResponse = await msgController.saveFile(saveFile.fileId, tmpdirectory, saveFile.outputFileName, saveFile.outputFileType, SetRegionAck.regionId, null, null, saveFile.keepDegenerate, null);
                         }, saveFileTimeout);
 
                         describe(`reopen the exported file "${saveFile.outputFileName}"`, () => {
