@@ -121,6 +121,6 @@ describe("SAVE_IMAGE_DROP_DEG: Exporting of an image without modification but on
                 });
             });
         });
-
+        afterAll(() => msgController.closeConnection());
     });
 });
