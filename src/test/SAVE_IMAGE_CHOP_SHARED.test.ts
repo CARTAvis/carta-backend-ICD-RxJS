@@ -100,7 +100,7 @@ let assertItem: AssertItem = {
 }
 
 let basepath: string;
-describe("EXPORT_IMAGE_CHOP_SHARED: Exporting of a chopped image via the shared region", () => {
+describe("SAVE_IMAGE_CHOP_SHARED: Exporting of a chopped image via the shared region", () => {
     const msgController = MessageController.Instance;
     describe(`Register a session`, () => {
         beforeAll(async ()=> {
@@ -137,7 +137,7 @@ describe("EXPORT_IMAGE_CHOP_SHARED: Exporting of a chopped image via the shared 
 
                 assertItem.saveFile.map((saveFile, fileIndex) => {
                     describe(`try to save image "${saveFile.outputFileName}"`, () => {
-                        let OpenFileAck: CARTA.IOpenFileAck
+                        let OpenFileAck: CARTA.IOpenFileAck;
                         test(`save image`, async () => {
                             let saveFileResponse = await msgController.saveFile(saveFile.fileId, tmpdirectory, saveFile.outputFileName, saveFile.outputFileType, SetRegionAck.regionId, null, null, saveFile.keepDegenerate, null);
                         }, saveFileTimeout);
