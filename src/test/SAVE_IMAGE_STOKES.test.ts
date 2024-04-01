@@ -62,7 +62,7 @@ let assertItem: AssertItem = {
 };
 
 let basepath: string;
-describe("EXPORT IMAGE STOKES test: Exporting of a partial spectral range of an image cube", () => {
+describe("SAVE IMAGE STOKES test: Exporting of a partial spectral range of an image cube", () => {
     const msgController = MessageController.Instance;
     describe(`Register a session`, () => {
         beforeAll(async ()=> {

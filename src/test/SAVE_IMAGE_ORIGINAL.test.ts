@@ -79,7 +79,7 @@ let assertItem: AssertItem = {
 }
 
 let basepath: string;
-describe("EXPORT_IMAGE_ORIGINAL: Exporting of an image without modification", () => {
+describe("SAVE_IMAGE_ORIGINAL: Exporting of an image without modification", () => {
     const msgController = MessageController.Instance;
     describe(`Register a session`, () => {
         beforeAll(async ()=> {
