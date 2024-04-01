@@ -4,7 +4,7 @@ import { MessageController } from "./MessageController";
 import config from "./config.json";
 
 let testServerUrl: string = config.serverURL0;
-let testSubdirectory: string = config.path.concat_stokes;
+let testSubdirectory: string = config.path.QA;
 let tmpdirectory: string = config.path.save;
 let connectTimeout: number = config.timeout.connection;
 let listFileTimeout = config.timeout.listFile;
@@ -22,43 +22,43 @@ interface AssertItem {
 let assertItem: AssertItem = {
     fileOpen: {
         directory: testSubdirectory,
-        file: "IRCp10216_sci.spw0.cube.IQUV.manual.pbcor.fits",
+        file: "HH211_IQU.fits",
         hdu: "",
         fileId: 0,
         renderMode: CARTA.RenderMode.RASTER,
     },
     saveFileReq:[
     {
-        outputFileName: "IRCp10216_sci.spw0.cube.QU.manual.pbcorx.image",
+        outputFileName: "HH211_QU_test.image",
         outputFileType: CARTA.FileType.CASA,
         fileId: 0,
-        channels: [0, 479, 1],
+        channels: [0, 2, 1],
         keepDegenerate: true,
-        stokes:[ 1, 2, 1],
+        stokes:[1, 2, 1],
     },
     {
-        outputFileName: "IRCp10216_sci.spw0.cube.QU.manual.pbcorx.fits",
+        outputFileName: "HH211_QU_test.fits",
         outputFileType: CARTA.FileType.FITS,
         fileId: 0,
-        channels: [0, 479, 1],
+        channels: [0, 2, 1],
         keepDegenerate: true,
-        stokes:[ 1, 2, 1]
+        stokes:[1, 2, 1]
     },],
     exportFileOpen: [
         {
-            file: "IRCp10216_sci.spw0.cube.QU.manual.pbcorx.image",
+            file: "HH211_QU_test.image",
             hdu: "",
             fileId: 1,
             renderMode: CARTA.RenderMode.RASTER,
         },
         {
-            file: "IRCp10216_sci.spw0.cube.QU.manual.pbcorx.fits",
+            file: "HH211_QU_test.fits",
             hdu: "",
             fileId: 2,
             renderMode: CARTA.RenderMode.RASTER,
         },
     ],
-    shapeSize: ['[256, 256, 480, 2]','[256, 256, 480, 2]']
+    shapeSize: ['[1049, 1049, 3, 2]','[1049, 1049, 3, 2]']
 };
 
 let basepath: string;
@@ -100,7 +100,7 @@ describe("EXPORT IMAGE STOKES test: Exporting of a partial spectral range of an 
                         OpenFileAck = OpenFileResponse;
                     }, openFileTimeout);
 
-                    test(`OPEN_FILE_ACK.fileInfoExtended.computedEntries['Shape'] = [256, 256, 480, 2]`, () => {
+                    test(`OPEN_FILE_ACK.fileInfoExtended.computedEntries['Shape'] = [1049, 1049, 3, 2]`, () => {
                         expect(OpenFileAck.fileInfoExtended.computedEntries.find(o => o.name == 'Shape').value).toContain(assertItem.shapeSize[fileIndex]);
                     });
                 });
