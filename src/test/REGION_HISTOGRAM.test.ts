@@ -108,14 +108,6 @@ let assertItem: AssertItem = {
                 firstBinCenter: -0.0075361598283052444,
                 bins: [5, 2, 1, 0, 4, 1, 3],
             },
-            // histograms: [
-            //     {
-            //         numBins: 7,
-            //         binWidth: 0.0033473593648523092,
-            //         firstBinCenter: -0.0075361598283052444,
-            //         bins: [5, 2, 1, 0, 4, 1, 3],
-            //     },
-            // ],
             progress: 1,
         },
         {
@@ -126,14 +118,6 @@ let assertItem: AssertItem = {
                 firstBinCenter: -0.0075361598283052444,
                 bins: [5, 2, 1, 0, 4, 1, 3],
             },
-            // histograms: [
-            //     {
-            //         numBins: 7,
-            //         binWidth: 0.0033473593648523092,
-            //         firstBinCenter: -0.0075361598283052444,
-            //         bins: [5, 2, 1, 0, 4, 1, 3],
-            //     },
-            // ],
             progress: 1,
         },
         {
@@ -142,12 +126,6 @@ let assertItem: AssertItem = {
                 numBins: 1,
                 bins: [0],
             },
-            // histograms: [
-            //     {
-            //         numBins: 1,
-            //         bins: [0],
-            //     },
-            // ],
             progress: 1,
         },
     ],
@@ -218,12 +196,9 @@ describe("REGION_HISTOGRAM test: Testing histogram with rectangle regions", () =
                     test(`REGION_HISTOGRAM_DATA should arrive within ${regionTimeout} ms`, async () => {
                         await msgController.setHistogramRequirements(assertItem.histogram[index]);
                         RegionHistogramData = await Stream(CARTA.RegionHistogramData, 1);
-                        // await Connection.send(CARTA.SetHistogramRequirements, assertItem.histogram[index]);
-                        // RegionHistogramData = await Connection.receive(CARTA.RegionHistogramData);
                     }, regionTimeout);
 
                     test(`REGION_HISTOGRAM_DATA.region_id = ${histogramData.regionId}`, () => {
-                        // console.log(RegionHistogramData)
                         expect(RegionHistogramData[0].regionId).toEqual(histogramData.regionId);
                     });
 
