@@ -323,9 +323,10 @@ describe("REGION_SPECTRAL_PROFILE_ELLIPSE: Testing spectral profiler with ellips
                     });
 
                     test("Assert SPECTRAL_PROFILE_DATA.profiles of CARTA.StatsType.Mean", () => {
-                        let _meanProfile = SpectralProfileData.profiles.find(f => f.statsType === CARTA.StatsType.RMS);
-                        let _assertProfile = assertItem.spectralProfileData[index].profile.find(f => f.statsType === CARTA.StatsType.RMS);
+                        let _meanProfile = SpectralProfileData.profiles.find(f => f.statsType === CARTA.StatsType.Mean);
+                        let _assertProfile = assertItem.spectralProfileData[index].profile.find(f => f.statsType === CARTA.StatsType.Mean);
                         let v0 = ProtobufProcessing.ProcessSpectralProfile(_meanProfile,1);
+                        expect(v0.values.length).toEqual(_assertProfile.profileLength);
                         _assertProfile.checkValues.map(assertVal => {
                             if (isNaN(assertVal.value)) {
                                 expect(v0.values[assertVal.index]).toEqual(assertVal.value);
