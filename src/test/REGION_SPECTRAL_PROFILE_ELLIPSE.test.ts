@@ -2,7 +2,6 @@ import { CARTA } from "carta-protobuf";
 import { checkConnection, Stream} from './myClient';
 import { MessageController } from "./MessageController";
 import config from "./config.json";
-// import { ProtobufProcessing } from "./Processed";
 
 let testServerUrl = config.serverURL0;
 let testSubdirectory = config.path.QA;
@@ -28,7 +27,6 @@ interface AssertItem {
     setSpectralRequirements: CARTA.ISetSpectralRequirements[];
     spectralProfileData: ISpectralProfileData[];
     spectralProfileDataHdf5: ISpectralProfileData[];
-    precisionDigits: number;
     rawValue64CheckValuesIndex: number[];
 }
 let assertItem: AssertItem = {
@@ -352,7 +350,6 @@ let assertItem: AssertItem = {
             ],
         },
     ],
-    precisionDigits: 4,
 }
 
 let basepath: string;
