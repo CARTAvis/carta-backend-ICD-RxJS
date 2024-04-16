@@ -2,7 +2,6 @@ import { CARTA } from "carta-protobuf";
 import { checkConnection, Stream} from './myClient';
 import { MessageController } from "./MessageController";
 import config from "./config.json";
-import { ProtobufProcessing } from "./Processed";
 
 let testServerUrl = config.serverURL0;
 let testSubdirectory = config.path.QA;
@@ -13,13 +12,12 @@ let regionTimeout = config.timeout.region;
 
 interface IProfilesExt extends CARTA.ISpectralProfile {
     profileLength?: number;
-    checkValues?: { index: number, value: number }[];
+    selectedRawValue64: number[];
 }
 interface ISpectralProfileData extends CARTA.ISpectralProfileData {
     profile?: IProfilesExt[];
 }
 interface AssertItem {
-    registerViewer: CARTA.IRegisterViewer;
     openFile: CARTA.IOpenFile[];
     setCursor: CARTA.ISetCursor;
     addRequiredTiles: CARTA.IAddRequiredTiles;
@@ -27,14 +25,10 @@ interface AssertItem {
     regionAck: CARTA.ISetRegionAck[];
     setSpectralRequirements: CARTA.ISetSpectralRequirements[];
     spectralProfileData: ISpectralProfileData[];
-    precisionDigits: number;
+    spectralProfileDataHdf5: ISpectralProfileData[];
+    rawValue64CheckValuesIndex: number[];
 }
 let assertItem: AssertItem = {
-    registerViewer: {
-        sessionId: 0,
-        apiKey: "",
-        clientFeatureFlags: 5,
-    },
     openFile:
         [
             {
@@ -210,6 +204,7 @@ let assertItem: AssertItem = {
             ],
         },
     ],
+    rawValue64CheckValuesIndex: [0, 50, 100, 150, 199],
     spectralProfileData: [
         {
             regionId: 1,
@@ -218,48 +213,48 @@ let assertItem: AssertItem = {
                 {
                     coordinate: "z",
                     statsType: CARTA.StatsType.Sum,
-                    checkValues: [{ index: 10, value: 0.86641663 }],
+                    selectedRawValue64: [0, 192, 254, 147, 191],
                 },
                 {
                     coordinate: "z",
                     statsType: CARTA.StatsType.FluxDensity,
-                    checkValues: [{ index: 10, value: 0.03980531  }],
+                    selectedRawValue64: [83, 164, 31, 77, 191],
                 },
                 {
                     coordinate: "z",
                     profileLength: 25,
                     statsType: CARTA.StatsType.Mean,
-                    checkValues: [{ index: 10, value: 0.05776111 }],
+                    selectedRawValue64: [0, 238, 32, 85, 191],
                 },
                 {
                     coordinate: "z",
                     statsType: CARTA.StatsType.RMS,
-                    checkValues: [{ index: 10, value: 0.05839548 }],
+                    selectedRawValue64: [74, 219, 68, 132, 63],
                 },
                 {
                     coordinate: "z",
                     statsType: CARTA.StatsType.Sigma,
-                    checkValues: [{ index: 10, value: 0.00888533 }],
+                    selectedRawValue64: [34, 49, 194, 133, 63],
                 },
                 {
                     coordinate: "z",
                     statsType: CARTA.StatsType.SumSq,
-                    checkValues: [{ index: 10, value: 0.05115047 }],
+                    selectedRawValue64: [0, 196, 37, 89, 63],
                 },
                 {
                     coordinate: "z",
                     statsType: CARTA.StatsType.Min,
-                    checkValues: [{ index: 10, value: 0.03859435 }],
+                    selectedRawValue64: [0, 0, 219, 151, 191],
                 },
                 {
                     coordinate: "z",
                     statsType: CARTA.StatsType.Max,
-                    checkValues: [{ index: 10, value: 0.0702243 }],
+                    selectedRawValue64: [0, 0, 179, 139, 63],
                 },
                 {
                     coordinate: "z",
                     statsType: CARTA.StatsType.Extrema,
-                    checkValues: [{ index: 10, value: 0.0702243 }],
+                    selectedRawValue64: [0, 0, 219, 151, 191],
                 },
             ],
         },
@@ -270,48 +265,48 @@ let assertItem: AssertItem = {
                 {
                     coordinate: "z",
                     statsType: CARTA.StatsType.Sum,
-                    checkValues: [{ index: 10, value: -0.3364888 }],
+                    selectedRawValue64: [0, 192, 116, 169, 191],
                 },
                 {
                     coordinate: "z",
                     statsType: CARTA.StatsType.FluxDensity,
-                    checkValues: [{ index: 10, value: -0.01545912  }],
+                    selectedRawValue64: [112, 251, 152, 98, 191],
                 },
                 {
                     coordinate: "z",
                     profileLength: 25,
                     statsType: CARTA.StatsType.Mean,
-                    checkValues: [{ index: 10, value: -0.02103055 }],
+                    selectedRawValue64: [0, 192, 116, 105, 191],
                 },
                 {
                     coordinate: "z",
                     statsType: CARTA.StatsType.RMS,
-                    checkValues: [{ index: 10, value: 0.02322209 }],
+                    selectedRawValue64: [132, 153, 232, 115, 63],
                 },
                 {
                     coordinate: "z",
                     statsType: CARTA.StatsType.Sigma,
-                    checkValues: [{ index: 10, value: 0.01017089 }],
+                    selectedRawValue64: [90, 13, 227, 111, 63],
                 },
                 {
                     coordinate: "z",
                     statsType: CARTA.StatsType.SumSq,
-                    checkValues: [{ index: 10, value: 0.00862825 }],
+                    selectedRawValue64: [0, 168, 253, 56, 63],
                 },
                 {
                     coordinate: "z",
                     statsType: CARTA.StatsType.Min,
-                    checkValues: [{ index: 10, value: -0.03209378 }],
+                    selectedRawValue64: [0, 0, 128, 111, 191],
                 },
                 {
                     coordinate: "z",
                     statsType: CARTA.StatsType.Max,
-                    checkValues: [{ index: 10, value: -0.00236961 }],
+                    selectedRawValue64: [0, 0, 86, 129, 63],
                 },
                 {
                     coordinate: "z",
                     statsType: CARTA.StatsType.Extrema,
-                    checkValues: [{ index: 10, value: -0.03209378 }],
+                    selectedRawValue64: [0, 0, 86, 129, 191],
                 },
             ],
         },
@@ -322,48 +317,48 @@ let assertItem: AssertItem = {
                 {
                     coordinate: "z",
                     statsType: CARTA.StatsType.Sum,
-                    checkValues: [{ index: 10, value: 0.00006235 }],
+                    selectedRawValue64: [0, 0, 151, 106, 63],
                 },
                 {
                     coordinate: "z",
                     statsType: CARTA.StatsType.FluxDensity,
-                    checkValues: [{ index: 10, value: 0.00000286 }],
+                    selectedRawValue64: [49, 175, 132, 35, 63],
                 },
                 {
                     coordinate: "z",
                     profileLength: 25,
                     statsType: CARTA.StatsType.Mean,
-                    checkValues: [{ index: 10, value: 0.00006235 }],
+                    selectedRawValue64: [0, 0, 151, 106, 63],
                 },
                 {
                     coordinate: "z",
                     statsType: CARTA.StatsType.RMS,
-                    checkValues: [{ index: 10, value: 0.00006235 }],
+                    selectedRawValue64: [109, 166, 150, 106, 63],
                 },
                 {
                     coordinate: "z",
                     statsType: CARTA.StatsType.Sigma,
-                    checkValues: [{ index: 10, value: 0.0 }],
+                    selectedRawValue64: [0, 0, 0, 0, 0],
                 },
                 {
                     coordinate: "z",
                     statsType: CARTA.StatsType.SumSq,
-                    checkValues: [{ index: 10, value: 0.0 }],
+                    selectedRawValue64: [0, 0, 28, 230, 62],
                 },
                 {
                     coordinate: "z",
                     statsType: CARTA.StatsType.Min,
-                    checkValues: [{ index: 10, value: 0.0000623 }],
+                    selectedRawValue64: [0, 0, 151, 106, 63],
                 },
                 {
                     coordinate: "z",
                     statsType: CARTA.StatsType.Max,
-                    checkValues: [{ index: 10, value: 0.0000623 }],
+                    selectedRawValue64: [0, 0, 151, 106, 63],
                 },
                 {
                     coordinate: "z",
                     statsType: CARTA.StatsType.Extrema,
-                    checkValues: [{ index: 10, value: 0.0000623 }],
+                    selectedRawValue64: [0, 0, 151, 106, 63],
                 },
             ],
         },
@@ -374,53 +369,262 @@ let assertItem: AssertItem = {
                 {
                     coordinate: "z",
                     statsType: CARTA.StatsType.Sum,
-                    checkValues: [{ index: 0, value: NaN }],
+                    selectedRawValue64: [0, 0, 0, 248, 127],
                 },
                 {
                     coordinate: "z",
                     statsType: CARTA.StatsType.FluxDensity,
-                    checkValues: [{ index: 0, value: NaN  }],
+                    selectedRawValue64: [0, 0, 0, 248, 127],
                 },
                 {
                     coordinate: "z",
                     profileLength: 25,
                     statsType: CARTA.StatsType.Mean,
-                    checkValues: [{ index: 0, value: NaN }],
+                    selectedRawValue64: [0, 0, 0, 248, 127],
                 },
                 {
                     coordinate: "z",
                     statsType: CARTA.StatsType.RMS,
-                    checkValues: [{ index: 0, value: NaN }],
+                    selectedRawValue64: [0, 0, 0, 248, 127],
                 },
                 {
                     coordinate: "z",
                     statsType: CARTA.StatsType.Sigma,
-                    checkValues: [{ index: 0, value: NaN }],
+                    selectedRawValue64: [0, 0, 0, 248, 127],
                 },
                 {
                     coordinate: "z",
                     statsType: CARTA.StatsType.SumSq,
-                    checkValues: [{ index: 0, value: NaN }],
+                    selectedRawValue64: [0, 0, 0, 248, 127],
                 },
                 {
                     coordinate: "z",
                     statsType: CARTA.StatsType.Min,
-                    checkValues: [{ index: 0, value: NaN }],
+                    selectedRawValue64: [0, 0, 0, 248, 127],
                 },
                 {
                     coordinate: "z",
                     statsType: CARTA.StatsType.Max,
-                    checkValues: [{ index: 0, value: NaN }],
+                    selectedRawValue64: [0, 0, 0, 248, 127],
                 },
                 {
                     coordinate: "z",
                     statsType: CARTA.StatsType.Extrema,
-                    checkValues: [{ index: 0, value: NaN }],
+                    selectedRawValue64: [0, 0, 0, 248, 127],
                 },
             ],
         },
     ],
-    precisionDigits: 4,
+    spectralProfileDataHdf5: [
+        {
+            regionId: 1,
+            progress: 1,
+            profile: [
+                {
+                    coordinate: "z",
+                    statsType: CARTA.StatsType.Sum,
+                    selectedRawValue64: [0, 192, 254, 147, 191],
+                },
+                {
+                    coordinate: "z",
+                    statsType: CARTA.StatsType.FluxDensity,
+                    selectedRawValue64: [83, 164, 31, 77, 191],
+                },
+                {
+                    coordinate: "z",
+                    profileLength: 25,
+                    statsType: CARTA.StatsType.Mean,
+                    selectedRawValue64: [0, 238, 32, 85, 191],
+                },
+                {
+                    coordinate: "z",
+                    statsType: CARTA.StatsType.RMS,
+                    selectedRawValue64: [9, 25, 68, 132, 63],
+                },
+                {
+                    coordinate: "z",
+                    statsType: CARTA.StatsType.Sigma,
+                    selectedRawValue64: [34, 49, 194, 133, 63],
+                },
+                {
+                    coordinate: "z",
+                    statsType: CARTA.StatsType.SumSq,
+                    selectedRawValue64: [204, 89, 37, 89, 63],
+                },
+                {
+                    coordinate: "z",
+                    statsType: CARTA.StatsType.Min,
+                    selectedRawValue64: [0, 0, 219, 151, 191],
+                },
+                {
+                    coordinate: "z",
+                    statsType: CARTA.StatsType.Max,
+                    selectedRawValue64: [0, 0, 179, 139, 63],
+                },
+                {
+                    coordinate: "z",
+                    statsType: CARTA.StatsType.Extrema,
+                    selectedRawValue64: [0, 0, 219, 151, 191],
+                },
+            ],
+        },
+        {
+            regionId: 2,
+            progress: 1,
+            profile: [
+                {
+                    coordinate: "z",
+                    statsType: CARTA.StatsType.Sum,
+                    selectedRawValue64: [0, 192, 116, 169, 191],
+                },
+                {
+                    coordinate: "z",
+                    statsType: CARTA.StatsType.FluxDensity,
+                    selectedRawValue64: [112, 251, 152, 98, 191],
+                },
+                {
+                    coordinate: "z",
+                    profileLength: 25,
+                    statsType: CARTA.StatsType.Mean,
+                    selectedRawValue64: [0, 192, 116, 105, 191],
+                },
+                {
+                    coordinate: "z",
+                    statsType: CARTA.StatsType.RMS,
+                    selectedRawValue64: [106, 203, 232, 115, 63],
+                },
+                {
+                    coordinate: "z",
+                    statsType: CARTA.StatsType.Sigma,
+                    selectedRawValue64: [91, 13, 227, 111, 63],
+                },
+                {
+                    coordinate: "z",
+                    statsType: CARTA.StatsType.SumSq,
+                    selectedRawValue64: [128, 32, 253, 56, 63],
+                },
+                {
+                    coordinate: "z",
+                    statsType: CARTA.StatsType.Min,
+                    selectedRawValue64: [0, 0, 128, 111, 191],
+                },
+                {
+                    coordinate: "z",
+                    statsType: CARTA.StatsType.Max,
+                    selectedRawValue64: [0, 0, 86, 129, 63],
+                },
+                {
+                    coordinate: "z",
+                    statsType: CARTA.StatsType.Extrema,
+                    selectedRawValue64: [0, 0, 86, 129, 191],
+                },
+            ],
+        },
+        {
+            regionId: 3,
+            progress: 1,
+            profile: [
+                {
+                    coordinate: "z",
+                    statsType: CARTA.StatsType.Sum,
+                    selectedRawValue64: [0, 0, 151, 106, 63],
+                },
+                {
+                    coordinate: "z",
+                    statsType: CARTA.StatsType.FluxDensity,
+                    selectedRawValue64: [49, 175, 132, 35, 63],
+                },
+                {
+                    coordinate: "z",
+                    profileLength: 25,
+                    statsType: CARTA.StatsType.Mean,
+                    selectedRawValue64: [0, 0, 151, 106, 63],
+                },
+                {
+                    coordinate: "z",
+                    statsType: CARTA.StatsType.RMS,
+                    selectedRawValue64: [0, 0, 151, 106, 63],
+                },
+                {
+                    coordinate: "z",
+                    statsType: CARTA.StatsType.Sigma,
+                    selectedRawValue64: [0, 0, 0, 0, 0],
+                },
+                {
+                    coordinate: "z",
+                    statsType: CARTA.StatsType.SumSq,
+                    selectedRawValue64: [0, 248, 28, 230, 62],
+                },
+                {
+                    coordinate: "z",
+                    statsType: CARTA.StatsType.Min,
+                    selectedRawValue64: [0, 0, 151, 106, 63],
+                },
+                {
+                    coordinate: "z",
+                    statsType: CARTA.StatsType.Max,
+                    selectedRawValue64: [0, 0, 151, 106, 63],
+                },
+                {
+                    coordinate: "z",
+                    statsType: CARTA.StatsType.Extrema,
+                    selectedRawValue64: [0, 0, 151, 106, 63],
+                },
+            ],
+        },
+        {
+            regionId: 4,
+            progress: 1,
+            profile: [
+                {
+                    coordinate: "z",
+                    statsType: CARTA.StatsType.Sum,
+                    selectedRawValue64: [0, 0, 0, 248, 127],
+                },
+                {
+                    coordinate: "z",
+                    statsType: CARTA.StatsType.FluxDensity,
+                    selectedRawValue64: [0, 0, 0, 248, 127],
+                },
+                {
+                    coordinate: "z",
+                    profileLength: 25,
+                    statsType: CARTA.StatsType.Mean,
+                    selectedRawValue64: [0, 0, 0, 248, 127],
+                },
+                {
+                    coordinate: "z",
+                    statsType: CARTA.StatsType.RMS,
+                    selectedRawValue64: [0, 0, 0, 248, 127],
+                },
+                {
+                    coordinate: "z",
+                    statsType: CARTA.StatsType.Sigma,
+                    selectedRawValue64: [0, 0, 0, 248, 127],
+                },
+                {
+                    coordinate: "z",
+                    statsType: CARTA.StatsType.SumSq,
+                    selectedRawValue64: [0, 0, 0, 248, 127],
+                },
+                {
+                    coordinate: "z",
+                    statsType: CARTA.StatsType.Min,
+                    selectedRawValue64: [0, 0, 0, 248, 127],
+                },
+                {
+                    coordinate: "z",
+                    statsType: CARTA.StatsType.Max,
+                    selectedRawValue64: [0, 0, 0, 248, 127],
+                },
+                {
+                    coordinate: "z",
+                    statsType: CARTA.StatsType.Extrema,
+                    selectedRawValue64: [0, 0, 0, 248, 127],
+                },
+            ],
+        },
+    ],
 }
 
 let basepath: string;
@@ -502,29 +706,34 @@ describe("REGION_SPECTRAL_PROFILE_RECTANGLE: Testing spectral profiler with rect
                     test("Assert SPECTRAL_PROFILE_DATA.profiles of CARTA.StatsType.Mean", () => {
                         let _meanProfile = SpectralProfileData.profiles.find(f => f.statsType === CARTA.StatsType.Mean);
                         let _assertProfile = assertItem.spectralProfileData[index].profile.find(f => f.statsType === CARTA.StatsType.Mean);
-                        let v0 = ProtobufProcessing.ProcessSpectralProfile(_meanProfile,1);
-                        expect(v0.values.length).toEqual(_assertProfile.profileLength);
-                        _assertProfile.checkValues.map(assertVal => {
-                            if (isNaN(assertVal.value)) {
-                                expect(v0.values[assertVal.index]).toEqual(assertVal.value);
-                            } else {
-                                expect(v0.values[assertVal.index]).toBeCloseTo(assertVal.value, assertItem.precisionDigits);
-                            }
-                        });          
+                        let _assertProfileHdf5 = assertItem.spectralProfileDataHdf5[index].profile.find(f => f.statsType === CARTA.StatsType.Mean);
+                        if (openFile.file.includes("image")) {
+                            assertItem.rawValue64CheckValuesIndex.map((input, inputIndex) => {
+                                expect(_meanProfile.rawValuesFp64[input]).toEqual(_assertProfile.selectedRawValue64[inputIndex]);
+                            })
+                        } else if (openFile.file.includes("hdf5")) {
+                            assertItem.rawValue64CheckValuesIndex.map((input, inputIndex) => {
+                                expect(_meanProfile.rawValuesFp64[input]).toEqual(_assertProfileHdf5.selectedRawValue64[inputIndex]);
+                            })
+                        }       
                     });
 
                     test("Assert other SPECTRAL_PROFILE_DATA.profiles", () => {
-                        assertItem.spectralProfileData[index].profile.map(profile => {
-                            let _returnedProfile = SpectralProfileData.profiles.find(f => f.statsType === profile.statsType);
-                            let v0 = ProtobufProcessing.ProcessSpectralProfile(_returnedProfile,1);
-                            profile.checkValues.map(assertVal => {
-                                if (isNaN(assertVal.value)) {
-                                    expect(v0.values[assertVal.index]).toEqual(assertVal.value);
-                                } else {
-                                    expect(v0.values[assertVal.index]).toBeCloseTo(assertVal.value, assertItem.precisionDigits);
-                                }
+                        if (openFile.file.includes("image")) {
+                            assertItem.spectralProfileData[index].profile.map(profile => {
+                                let _returnedProfile = SpectralProfileData.profiles.find(f => f.statsType === profile.statsType);
+                                assertItem.rawValue64CheckValuesIndex.map((input, inputIndex) => {
+                                    expect(_returnedProfile.rawValuesFp64[input]).toEqual(profile.selectedRawValue64[inputIndex]);
+                                })
                             });
-                        });
+                        } else if (openFile.file.includes("hdf5")) {
+                            assertItem.spectralProfileDataHdf5[index].profile.map(profile => {
+                                let _returnedProfile = SpectralProfileData.profiles.find(f => f.statsType === profile.statsType);
+                                assertItem.rawValue64CheckValuesIndex.map((input, inputIndex) => {
+                                    expect(_returnedProfile.rawValuesFp64[input]).toEqual(profile.selectedRawValue64[inputIndex]);
+                                })
+                            });
+                        }
                     });
                 });
             });
