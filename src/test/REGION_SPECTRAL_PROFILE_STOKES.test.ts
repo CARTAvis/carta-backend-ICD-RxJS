@@ -2,7 +2,6 @@ import { CARTA } from "carta-protobuf";
 import { checkConnection, Stream} from './myClient';
 import { MessageController } from "./MessageController";
 import config from "./config.json";
-import { ProtobufProcessing } from "./Processed";
 
 let testServerUrl = config.serverURL0;
 let testSubdirectory = config.path.QA;
@@ -13,7 +12,7 @@ let regionTimeout = config.timeout.region;
 
 interface IProfilesExt extends CARTA.ISpectralProfile {
     profileLength?: number;
-    checkValues?: { index: number, value: number }[];
+    selectedRawValue64?: number[];
     message?: string;
     severity?: number;
     tags?: string[];
@@ -22,7 +21,6 @@ interface ISpectralProfileData extends CARTA.ISpectralProfileData {
     profile?: IProfilesExt[];
 }
 interface AssertItem {
-    registerViewer: CARTA.IRegisterViewer;
     openFile: CARTA.IOpenFile[];
     setCursor: CARTA.ISetCursor;
     addRequiredTiles: CARTA.IAddRequiredTiles;
@@ -31,14 +29,9 @@ interface AssertItem {
     regionAck: CARTA.ISetRegionAck[];
     setSpectralRequirements: CARTA.ISetSpectralRequirements[];
     spectralProfileData: ISpectralProfileData[];
-    precisionDigits: number;
+    rawValue64CheckValuesIndex: number[];
 }
 let assertItem: AssertItem = {
-    registerViewer: {
-        sessionId: 0,
-        apiKey: "",
-        clientFeatureFlags: 5,
-    },
     openFile: [
         {
             directory: testSubdirectory,
@@ -153,6 +146,7 @@ let assertItem: AssertItem = {
             ],
         },
     ],
+    rawValue64CheckValuesIndex: [0, 10, 20, 30, 39],
     spectralProfileData: [
         {
             regionId: 1,
@@ -162,7 +156,7 @@ let assertItem: AssertItem = {
                     coordinate: "z",
                     profileLength: 5,
                     statsType: CARTA.StatsType.Mean,
-                    checkValues: [{ index: 2, value: 0.035725489635913335 }],
+                    selectedRawValue64: [254, 69, 156, 147, 63],
                 },
             ],
         },
@@ -174,7 +168,7 @@ let assertItem: AssertItem = {
                     coordinate: "z",
                     profileLength: 5,
                     statsType: CARTA.StatsType.Mean,
-                    checkValues: [{ index: 2, value: -0.0004460110767806237 }],
+                    selectedRawValue64: [171, 51, 210, 53, 191],
                 },
             ],
         },
@@ -186,7 +180,7 @@ let assertItem: AssertItem = {
                     coordinate: "Uz",
                     profileLength: 5,
                     statsType: CARTA.StatsType.Mean,
-                    checkValues: [{ index: 2, value: -0.00010940432089077795 }],
+                    selectedRawValue64: [197, 232, 255, 64, 191],
                 },
             ],
         },
@@ -203,7 +197,6 @@ let assertItem: AssertItem = {
             ],
         },
     ],
-    precisionDigits: 4,
 }
 
 let basepath: string;
@@ -285,29 +278,9 @@ describe("REGION_SPECTRAL_PROFILE_STOKES: Testing spectral profiler with regions
                     test("Assert SPECTRAL_PROFILE_DATA.profiles of CARTA.StatsType.Mean", () => {
                         let _meanProfile = SpectralProfileData.profiles.find(f => f.statsType === CARTA.StatsType.Mean);
                         let _assertProfile = assertItem.spectralProfileData[index].profile.find(f => f.statsType === CARTA.StatsType.Mean);
-                        let v0 = ProtobufProcessing.ProcessSpectralProfile(_meanProfile,1);
-                        expect(v0.values.length).toEqual(_assertProfile.profileLength);
-                        _assertProfile.checkValues.map(assertVal => {
-                            if (isNaN(assertVal.value)) {
-                                expect(v0.values[assertVal.index]).toEqual(assertVal.value);
-                            } else {
-                                expect(v0.values[assertVal.index]).toBeCloseTo(assertVal.value, assertItem.precisionDigits);
-                            }
-                        });          
-                    });
-
-                    test("Assert other SPECTRAL_PROFILE_DATA.profiles", () => {
-                        assertItem.spectralProfileData[index].profile.map(profile => {
-                            let _returnedProfile = SpectralProfileData.profiles.find(f => f.statsType === profile.statsType);
-                            let v0 = ProtobufProcessing.ProcessSpectralProfile(_returnedProfile,1);
-                            profile.checkValues.map(assertVal => {
-                                if (isNaN(assertVal.value)) {
-                                    expect(v0.values[assertVal.index]).toEqual(assertVal.value);
-                                } else {
-                                    expect(v0.values[assertVal.index]).toBeCloseTo(assertVal.value, assertItem.precisionDigits);
-                                }
-                            });
-                        });
+                        assertItem.rawValue64CheckValuesIndex.map((input, inputIndex) => {
+                            expect(_meanProfile.rawValuesFp64[input]).toEqual(_assertProfile.selectedRawValue64[inputIndex]);
+                        })         
                     });
 
                     describe(`Change to stokes = ${assertItem.setImageChannels[1].stokes}`, () => {
@@ -327,17 +300,10 @@ describe("REGION_SPECTRAL_PROFILE_STOKES: Testing spectral profiler with regions
     
                         test("Assert SPECTRAL_PROFILE_DATA.profiles of CARTA.StatsType.Mean", () => {
                             let _meanProfile = SpectralProfileData[0].profiles.find(f => f.statsType === CARTA.StatsType.Mean);
-                            expect(_meanProfile.coordinate).toEqual(assertItem.spectralProfileData[1].profile[0].coordinate);
-                            let v0 = ProtobufProcessing.ProcessSpectralProfile(_meanProfile,1);
-                            expect(v0.values.length).toEqual(assertItem.spectralProfileData[1].profile[0].profileLength);
-                            expect(v0.statsType).toEqual(assertItem.spectralProfileData[1].profile[0].statsType);
-                            assertItem.spectralProfileData[1].profile[0].checkValues.map(assertVal => {
-                                if (isNaN(assertVal.value)) {
-                                    expect(isNaN(_meanProfile.values[assertVal.index])).toBe(true);
-                                } else {
-                                    expect(v0.values[assertVal.index]).toBeCloseTo(assertVal.value, assertItem.precisionDigits);
-                                }
-                            });
+                            let _assertProfile = assertItem.spectralProfileData[1].profile.find(f => f.statsType === CARTA.StatsType.Mean);
+                            assertItem.rawValue64CheckValuesIndex.map((input, inputIndex) => {
+                                expect(_meanProfile.rawValuesFp64[input]).toEqual(_assertProfile.selectedRawValue64[inputIndex]);
+                            })   
                         });
                     });
 
@@ -355,17 +321,10 @@ describe("REGION_SPECTRAL_PROFILE_STOKES: Testing spectral profiler with regions
     
                         test("Assert SPECTRAL_PROFILE_DATA.profiles of CARTA.StatsType.Mean", () => {
                             let _meanProfile = SpectralProfileData[0].profiles.find(f => f.statsType === CARTA.StatsType.Mean);
-                            expect(_meanProfile.coordinate).toEqual(assertItem.spectralProfileData[2].profile[0].coordinate);
-                            let v0 = ProtobufProcessing.ProcessSpectralProfile(_meanProfile,1);
-                            expect(v0.values.length).toEqual(assertItem.spectralProfileData[2].profile[0].profileLength);
-                            expect(v0.statsType).toEqual(assertItem.spectralProfileData[2].profile[0].statsType);
-                            assertItem.spectralProfileData[2].profile[0].checkValues.map(assertVal => {
-                                if (isNaN(assertVal.value)) {
-                                    expect(isNaN(_meanProfile.values[assertVal.index])).toBe(true);
-                                } else {
-                                    expect(v0.values[assertVal.index]).toBeCloseTo(assertVal.value, assertItem.precisionDigits);
-                                }
-                            });
+                            let _assertProfile = assertItem.spectralProfileData[2].profile.find(f => f.statsType === CARTA.StatsType.Mean);
+                            assertItem.rawValue64CheckValuesIndex.map((input, inputIndex) => {
+                                expect(_meanProfile.rawValuesFp64[input]).toEqual(_assertProfile.selectedRawValue64[inputIndex]);
+                            })  
                         });
                     });
 
