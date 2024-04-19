@@ -159,12 +159,13 @@ describe("MULTI-SPECTRAL-PROFILE-POLARIZATION: Test plotting the multi-spectral 
 
                 msgController.setSpectralRequirements(assertItem.setSpectralRequirements[0]);
                 let spectralProfileProgressReponse: any = await spectralProfileProgressPromise;
-                expect(spectralProfileProgressReponse[0].regionId).toEqual(1);
-                expect(spectralProfileProgressReponse[0].progress).toEqual(1);
-                expect(spectralProfileProgressReponse[0].profiles[0].coordinate).toEqual("Iz");
-                expect(spectralProfileProgressReponse[0].profiles[0].statsType).toEqual(CARTA.StatsType.Mean);
+                spectralProfileProgressReponse = spectralProfileProgressReponse.slice(-1)[0];
+                expect(spectralProfileProgressReponse.regionId).toEqual(1);
+                expect(spectralProfileProgressReponse.progress).toEqual(1);
+                expect(spectralProfileProgressReponse.profiles[0].coordinate).toEqual("Iz");
+                expect(spectralProfileProgressReponse.profiles[0].statsType).toEqual(CARTA.StatsType.Mean);
                 assertItem.ReturnSpectralProfileRawValuesFp64Index.map((inputIndex, index) => {
-                    expect(spectralProfileProgressReponse[0].profiles[0].rawValuesFp64[inputIndex]).toEqual(assertItem.ReturnSpectralProfileRawValuesFp64Number1[index]);
+                    expect(spectralProfileProgressReponse.profiles[0].rawValuesFp64[inputIndex]).toEqual(assertItem.ReturnSpectralProfileRawValuesFp64Number1[index]);
                 });
             });
             
@@ -183,12 +184,13 @@ describe("MULTI-SPECTRAL-PROFILE-POLARIZATION: Test plotting the multi-spectral 
 
                 msgController.setSpectralRequirements(assertItem.setSpectralRequirements[1]);
                 let spectralProfileProgressReponse2: any = await spectralProfileProgressPromise2;
-                expect(spectralProfileProgressReponse2[0].regionId).toEqual(1);
-                expect(spectralProfileProgressReponse2[0].progress).toEqual(1);
-                expect(spectralProfileProgressReponse2[0].profiles[0].coordinate).toEqual("Qz");
-                expect(spectralProfileProgressReponse2[0].profiles[0].statsType).toEqual(CARTA.StatsType.Mean);
+                spectralProfileProgressReponse2 = spectralProfileProgressReponse2.slice(-1)[0];
+                expect(spectralProfileProgressReponse2.regionId).toEqual(1);
+                expect(spectralProfileProgressReponse2.progress).toEqual(1);
+                expect(spectralProfileProgressReponse2.profiles[0].coordinate).toEqual("Qz");
+                expect(spectralProfileProgressReponse2.profiles[0].statsType).toEqual(CARTA.StatsType.Mean);
                 assertItem.ReturnSpectralProfileRawValuesFp64Index.map((inputIndex, index) => {
-                    expect(spectralProfileProgressReponse2[0].profiles[0].rawValuesFp64[inputIndex]).toEqual(assertItem.ReturnSpectralProfileRawValuesFp64Number2[index]);
+                    expect(spectralProfileProgressReponse2.profiles[0].rawValuesFp64[inputIndex]).toEqual(assertItem.ReturnSpectralProfileRawValuesFp64Number2[index]);
                 });
             });
 
@@ -207,12 +209,13 @@ describe("MULTI-SPECTRAL-PROFILE-POLARIZATION: Test plotting the multi-spectral 
 
                 msgController.setSpectralRequirements(assertItem.setSpectralRequirements[2]);
                 let spectralProfileProgressReponse3: any = await spectralProfileProgressPromise3;
-                expect(spectralProfileProgressReponse3[0].regionId).toEqual(1);
-                expect(spectralProfileProgressReponse3[0].progress).toEqual(1);
-                expect(spectralProfileProgressReponse3[0].profiles[0].coordinate).toEqual("Uz");
-                expect(spectralProfileProgressReponse3[0].profiles[0].statsType).toEqual(CARTA.StatsType.Mean);
+                spectralProfileProgressReponse3 = spectralProfileProgressReponse3.slice(-1)[0];
+                expect(spectralProfileProgressReponse3.regionId).toEqual(1);
+                expect(spectralProfileProgressReponse3.progress).toEqual(1);
+                expect(spectralProfileProgressReponse3.profiles[0].coordinate).toEqual("Uz");
+                expect(spectralProfileProgressReponse3.profiles[0].statsType).toEqual(CARTA.StatsType.Mean);
                 assertItem.ReturnSpectralProfileRawValuesFp64Index.map((inputIndex, index) => {
-                    expect(spectralProfileProgressReponse3[0].profiles[0].rawValuesFp64[inputIndex]).toEqual(assertItem.ReturnSpectralProfileRawValuesFp64Number3[index]);
+                    expect(spectralProfileProgressReponse3.profiles[0].rawValuesFp64[inputIndex]).toEqual(assertItem.ReturnSpectralProfileRawValuesFp64Number3[index]);
                 });
             });
         });
