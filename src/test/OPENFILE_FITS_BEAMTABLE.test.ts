@@ -16,7 +16,7 @@ interface AssertItem {
 let assertItem: AssertItem = {
     openFile: {
         directory: testSubdirectory,
-        file: "SDC335.579-0.292.spw0.line.image",
+        file: "SDC335.579-0.292.spw0.line.fits",
         hdu: "",
         fileId: 0,
         renderMode: CARTA.RenderMode.RASTER,
@@ -25,10 +25,10 @@ let assertItem: AssertItem = {
         success: true,
         message: "",
         fileInfo: {
-            name: "SDC335.579-0.292.spw0.line.image",
-            type: CARTA.FileType.CASA,
-            size: 1865037287,
-            HDUList: [""],
+            name: "SDC335.579-0.292.spw0.line.fits",
+            type: CARTA.FileType.FITS,
+            size: 1806465600,
+            HDUList: ["0"],
         },
         beamTable: [
             { majorAxis: 5.9266767501831055, minorAxis: 4.055838584899902, pa: -73.86445617675781 },
@@ -42,7 +42,7 @@ let assertItem: AssertItem = {
 };
 
 let basepath: string;
-describe("OPEN_FILE_CASA_BEAMTABLE: Testing if file info of beam tables of a CASA image is correctly delivered by the backend", () => {
+describe("OPEN_FILE_FITS_BEAMTABLE: Testing if file info of beam tables of a FITS image is correctly delivered by the backend", () => {
     const msgController = MessageController.Instance;
     describe(`Register a session`, () => {
         beforeAll(async ()=> {
