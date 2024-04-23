@@ -9,6 +9,8 @@ let connectTimeout = config.timeout.connection;
 let openFileTimeout = config.timeout.openFile;
 
 interface AssertItem {
+    precisionDigits: number;
+    registerViewer: CARTA.IRegisterViewer;
     openFile: CARTA.IOpenFile;
     addTilesReq: CARTA.IAddRequiredTiles;
     setRegion: CARTA.ISetRegion;
@@ -19,9 +21,14 @@ interface AssertItem {
     ReturnSpectralProfileRawValuesFp64Number3: Number[];
 }
 let assertItem: AssertItem = {
+    precisionDigits: 7,
+    registerViewer: {
+        sessionId: 0,
+        clientFeatureFlags: 5,
+    },
     openFile: {
         directory: testSubdirectory,
-        file: "HH211_IQU.fits",
+        file: "HD163296_CO_2_1.fits",
         fileId: 0,
         hdu: "",
         renderMode: CARTA.RenderMode.RASTER,
@@ -31,14 +38,14 @@ let assertItem: AssertItem = {
         fileId: 0,
         compressionQuality: 11,
         compressionType: CARTA.CompressionType.ZFP,
-        tiles: [33558529,33558528, 33554433,33554432,33562625,33558530,33562624,33554434,33562626],
+        tiles: [16777216, 16781312, 16777217, 16781313],
     },
     setRegion: {
         fileId: 0,
         regionId: -1,
         regionInfo: {
             regionType: CARTA.RegionType.RECTANGLE,
-            controlPoints: [{ x: 520, y: 520 }, { x: 100, y: 100 }],
+            controlPoints: [{ x: 210, y: 220 }, { x: 100, y: 100 }],
             rotation: 0.0,
         }
     },
@@ -48,7 +55,7 @@ let assertItem: AssertItem = {
             regionId: 1,
             spectralProfiles: [
                 {
-                    coordinate: "Iz",
+                    coordinate: "z",
                     statsTypes: [
                         CARTA.StatsType.Mean,
                     ],
@@ -60,15 +67,9 @@ let assertItem: AssertItem = {
             regionId: 1,
             spectralProfiles: [
                 {
-                    coordinate: "Iz",
+                    coordinate: "z",
                     statsTypes: [
-                        CARTA.StatsType.Mean,
-                    ],
-                },
-                {
-                    coordinate: "Qz",
-                    statsTypes: [
-                        CARTA.StatsType.Mean,
+                        CARTA.StatsType.RMS,
                     ],
                 }
             ],
@@ -78,34 +79,23 @@ let assertItem: AssertItem = {
             regionId: 1,
             spectralProfiles: [
                 {
-                    coordinate: "Qz",
+                    coordinate: "z",
                     statsTypes: [
-                        CARTA.StatsType.Mean,
+                        CARTA.StatsType.RMS,
+                        CARTA.StatsType.Sigma,
                     ],
-                },
-                {
-                    coordinate: "Iz",
-                    statsTypes: [
-                        CARTA.StatsType.Mean,
-                    ],
-                },
-                {
-                    coordinate: "Uz",
-                    statsTypes: [
-                        CARTA.StatsType.Mean,
-                    ],
-                },
+                }
             ],
         },
     ],
-    ReturnSpectralProfileRawValuesFp64Index: [0, 5, 10, 15, 20, 25, 30, 35, 39],
-    ReturnSpectralProfileRawValuesFp64Number1: [202, 58, 229, 63, 220, 156, 70, 189, 63],
-    ReturnSpectralProfileRawValuesFp64Number2: [10, 1, 168, 190, 232, 120, 204, 28, 190],
-    ReturnSpectralProfileRawValuesFp64Number3: [211, 167, 75, 62, 249, 74, 233, 192, 63],
+    ReturnSpectralProfileRawValuesFp64Index: [0, 300, 600, 900, 1000, 1200, 1500, 1800, 1900],
+    ReturnSpectralProfileRawValuesFp64Number1: [137, 109, 45, 117, 155, 140, 36, 0, 0],
+    ReturnSpectralProfileRawValuesFp64Number2: [125, 53, 60, 185, 122, 183, 124, 0, 0],
+    ReturnSpectralProfileRawValuesFp64Number3: [25, 80, 41, 210, 250, 176, 70, 0, 0],
 };
 
 let basepath: string;
-describe("MULTI-SPECTRAL-PROFILE-POLARIZATION: Test plotting the multi-spectral profiles with setting multi polarizations in one region", () => {
+describe("MULTI-SPECTRAL-PROFILE-STATISTIC: Test plotting the multi-spectral profiles with setting multi statistics in one region", () => {
     const msgController = MessageController.Instance;
     describe(`Register a session`, () => {
         beforeAll(async ()=> {
@@ -137,39 +127,40 @@ describe("MULTI-SPECTRAL-PROFILE-POLARIZATION: Test plotting the multi-spectral 
             })
         });
 
-        describe(`Plot multi polarizations for one region in the spectral profiler widget:`, () => {
+        describe(`Plot multi statistics in one region in the spectral profiler:`, () => {
             test(`Set one Region in the images`, async () => {
                 let setRegionAckResponse = await msgController.setRegion(assertItem.setRegion.fileId, assertItem.setRegion.regionId, assertItem.setRegion.regionInfo);
                 expect(setRegionAckResponse.regionId).toEqual(1);
                 expect(setRegionAckResponse.success).toEqual(true);
             });
 
-            test(`Plot the first polarizations Iz in the spectral profiles and check the values`, async () => {
-                let spectralProfileProgressArray = [];
-                let spectralProfileProgressPromise = new Promise((resolve)=>{
-                    msgController.spectralProfileStream.subscribe({
-                         next: (data) => {
-                            spectralProfileProgressArray.push(data)
-                            if (Math.round(data.progress) == 1) {
-                                resolve(spectralProfileProgressArray)
+            describe(`Plot the statistics in the spectral profiles and check the values separately`, () => {
+                test(`Plot the first statistics MEAN in the spectral profiles and check the values`, async () => {
+                    let spectralProfileProgressArray = [];
+                    let spectralProfileProgressPromise = new Promise((resolve)=>{
+                        msgController.spectralProfileStream.subscribe({
+                             next: (data) => {
+                                spectralProfileProgressArray.push(data)
+                                if (Math.round(data.progress) == 1) {
+                                    resolve(spectralProfileProgressArray)
+                                }
                             }
-                        }
-                    })
+                        })
+                    });
+    
+                    msgController.setSpectralRequirements(assertItem.setSpectralRequirements[0]);
+                    let spectralProfileProgressReponse: any = await spectralProfileProgressPromise;
+                    spectralProfileProgressReponse = spectralProfileProgressReponse.slice(-1)[0]; 
+                    expect(spectralProfileProgressReponse.regionId).toEqual(1);
+                    expect(spectralProfileProgressReponse.progress).toEqual(1);
+                    expect(spectralProfileProgressReponse.profiles[0].coordinate).toEqual("z");
+                    expect(spectralProfileProgressReponse.profiles[0].statsType).toEqual(CARTA.StatsType.Mean);
+                    assertItem.ReturnSpectralProfileRawValuesFp64Index.map((inputIndex, index) => {
+                        expect(spectralProfileProgressReponse.profiles[0].rawValuesFp64[inputIndex]).toEqual(assertItem.ReturnSpectralProfileRawValuesFp64Number1[index]);
+                    });
                 });
 
-                msgController.setSpectralRequirements(assertItem.setSpectralRequirements[0]);
-                let spectralProfileProgressReponse: any = await spectralProfileProgressPromise;
-                spectralProfileProgressReponse = spectralProfileProgressReponse.slice(-1)[0];
-                expect(spectralProfileProgressReponse.regionId).toEqual(1);
-                expect(spectralProfileProgressReponse.progress).toEqual(1);
-                expect(spectralProfileProgressReponse.profiles[0].coordinate).toEqual("Iz");
-                expect(spectralProfileProgressReponse.profiles[0].statsType).toEqual(CARTA.StatsType.Mean);
-                assertItem.ReturnSpectralProfileRawValuesFp64Index.map((inputIndex, index) => {
-                    expect(spectralProfileProgressReponse.profiles[0].rawValuesFp64[inputIndex]).toEqual(assertItem.ReturnSpectralProfileRawValuesFp64Number1[index]);
-                });
-            });
-            
-            test(`Adding the second polarizations Qz in the spectral profiles and check the values`, async () => {
+                test(`Plot the second statistics RMS in the spectral profiles and check the values`, async () => {
                 let spectralProfileProgressArray2 = [];
                 let spectralProfileProgressPromise2 = new Promise((resolve)=>{
                     msgController.spectralProfileStream.subscribe({
@@ -187,35 +178,38 @@ describe("MULTI-SPECTRAL-PROFILE-POLARIZATION: Test plotting the multi-spectral 
                 spectralProfileProgressReponse2 = spectralProfileProgressReponse2.slice(-1)[0];
                 expect(spectralProfileProgressReponse2.regionId).toEqual(1);
                 expect(spectralProfileProgressReponse2.progress).toEqual(1);
-                expect(spectralProfileProgressReponse2.profiles[0].coordinate).toEqual("Qz");
-                expect(spectralProfileProgressReponse2.profiles[0].statsType).toEqual(CARTA.StatsType.Mean);
+                expect(spectralProfileProgressReponse2.profiles[0].coordinate).toEqual("z");
+                expect(spectralProfileProgressReponse2.profiles[0].statsType).toEqual(CARTA.StatsType.RMS);
                 assertItem.ReturnSpectralProfileRawValuesFp64Index.map((inputIndex, index) => {
                     expect(spectralProfileProgressReponse2.profiles[0].rawValuesFp64[inputIndex]).toEqual(assertItem.ReturnSpectralProfileRawValuesFp64Number2[index]);
                 });
             });
+            });
 
-            test(`Adding the third polarizations Qz in the spectral profiles and check the values`, async () => {
-                let spectralProfileProgressArray3 = [];
-                let spectralProfileProgressPromise3 = new Promise((resolve)=>{
-                    msgController.spectralProfileStream.subscribe({
-                         next: (data) => {
-                            spectralProfileProgressArray3.push(data)
-                            if (Math.round(data.progress) == 1) {
-                                resolve(spectralProfileProgressArray3)
+            describe(`Plot two statistics method in the spectral profiles`, () => {
+                test(`Request plotting RMS & SIGMA and check the values:`, async () => {
+                    let spectralProfileProgressArray3 = [];
+                    let spectralProfileProgressPromise3 = new Promise((resolve)=>{
+                        msgController.spectralProfileStream.subscribe({
+                            next: (data) => {
+                                spectralProfileProgressArray3.push(data)
+                                if (Math.round(data.progress) == 1) {
+                                    resolve(spectralProfileProgressArray3)
+                                }
                             }
-                        }
-                    })
-                });
+                        })
+                    });
 
-                msgController.setSpectralRequirements(assertItem.setSpectralRequirements[2]);
-                let spectralProfileProgressReponse3: any = await spectralProfileProgressPromise3;
-                spectralProfileProgressReponse3 = spectralProfileProgressReponse3.slice(-1)[0];
-                expect(spectralProfileProgressReponse3.regionId).toEqual(1);
-                expect(spectralProfileProgressReponse3.progress).toEqual(1);
-                expect(spectralProfileProgressReponse3.profiles[0].coordinate).toEqual("Uz");
-                expect(spectralProfileProgressReponse3.profiles[0].statsType).toEqual(CARTA.StatsType.Mean);
-                assertItem.ReturnSpectralProfileRawValuesFp64Index.map((inputIndex, index) => {
-                    expect(spectralProfileProgressReponse3.profiles[0].rawValuesFp64[inputIndex]).toEqual(assertItem.ReturnSpectralProfileRawValuesFp64Number3[index]);
+                    msgController.setSpectralRequirements(assertItem.setSpectralRequirements[2]);
+                    let spectralProfileProgressReponse3: any = await spectralProfileProgressPromise3;
+                    spectralProfileProgressReponse3 = spectralProfileProgressReponse3.slice(-1)[0];
+                    expect(spectralProfileProgressReponse3.regionId).toEqual(1);
+                    expect(spectralProfileProgressReponse3.progress).toEqual(1);
+                    expect(spectralProfileProgressReponse3.profiles[0].coordinate).toEqual("z");
+                    expect(spectralProfileProgressReponse3.profiles[0].statsType).toEqual(CARTA.StatsType.Sigma);
+                    assertItem.ReturnSpectralProfileRawValuesFp64Index.map((inputIndex, index) => {
+                        expect(spectralProfileProgressReponse3.profiles[0].rawValuesFp64[inputIndex]).toEqual(assertItem.ReturnSpectralProfileRawValuesFp64Number3[index]);
+                    });
                 });
             });
         });
