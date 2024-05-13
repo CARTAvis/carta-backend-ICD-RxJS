@@ -19,25 +19,7 @@ interface AssertItem {
     rasterTileDataGroup: CARTA.IRasterTileData[];
 }
 
-interface IRasterTileDataExt extends CARTA.IRasterTileData {
-    tilesLength: number;
-}
-interface AssertItem {
-    registerViewer: CARTA.IRegisterViewer;
-    filelist: CARTA.IFileListRequest;
-    fileOpenGroup: CARTA.IOpenFile[];
-    fileOpenAckGroup: CARTA.IOpenFileAck[];
-    regionHistogramDataGroup: CARTA.IRegionHistogramData[];
-    setImageChannelGroup: CARTA.ISetImageChannels[];
-    addRequiredTilesGroup: CARTA.IAddRequiredTiles[];
-    rasterTileDataGroup: IRasterTileDataExt[];
-}
 let assertItem: AssertItem = {
-    registerViewer: {
-        sessionId: 0,
-        apiKey: "",
-        clientFeatureFlags: 5,
-    },
     filelist: { directory: testSubdirectory },
     fileOpenGroup: [
         {

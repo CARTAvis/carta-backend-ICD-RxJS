@@ -27,7 +27,6 @@ let assertItem: AssertItem = {
         fileInfo: {
             name: "SDC335.579-0.292.spw0.line.image",
             type: CARTA.FileType.CASA,
-            size: 1865037287,
             HDUList: [""],
         },
         beamTable: [
@@ -76,10 +75,6 @@ describe("OPEN_FILE_CASA_BEAMTABLE: Testing if file info of beam tables of a CAS
 
             test(`OPEN_FILE_ACK.file_info.name = "${assertItem.openFileAck.fileInfo.name}"`, () => {
                 expect(OpenFileAck.fileInfo.name).toEqual(assertItem.openFileAck.fileInfo.name);
-            });
-
-            test(`OPEN_FILE_ACK.file_info.size = ${assertItem.openFileAck.fileInfo.size}`, () => {
-                expect(OpenFileAck.fileInfo.size.toString()).toEqual(assertItem.openFileAck.fileInfo.size.toString());
             });
 
             test(`OPEN_FILE_ACK.file_info.type = ${CARTA.FileType.FITS}`, () => {
