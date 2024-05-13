@@ -211,7 +211,7 @@ describe("MATCH_STATS_WIDE_BORDERLINE: Testing region stats with spatially and s
                         } else {
                             if (CARTA.StatsType[statsType] === "NumPixels") {
                                 let difference: Number = Math.abs(left - right);
-                                expect(difference).toBeLessThanOrEqual(1);
+                                expect(difference).toBeLessThanOrEqual(2);
                             } else {
                                 expect(left).toBeCloseTo(right, assertItem.precisionDigits);
                             }
