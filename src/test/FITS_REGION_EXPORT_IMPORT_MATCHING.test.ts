@@ -35,82 +35,82 @@ let assertItem: AssertItem = {
     precisionDigits: 3,
     regionType:["Point", "Rectangle", "Ellipse", "Polygon"],
     setRegion:
-    [
-        {
-            fileId: 0,
-            regionId: -1,   // 1
-            regionInfo: {
-                regionType: CARTA.RegionType.POINT,
-                rotation: 0,
-                controlPoints: [{ x: 262.071716, y: 377.173907 }],
+        [
+            {
+                fileId: 0,
+                regionId: -1,   // 1
+                regionInfo: {
+                    regionType: CARTA.RegionType.POINT,
+                    rotation: 0,
+                    controlPoints: [{ x: 262.071716, y: 377.173907 }],
+                },
             },
-        },
-        {
-            fileId: 0,
-            regionId: -1,   // 2
-            regionInfo: {
-                regionType: CARTA.RegionType.RECTANGLE,
-                rotation: 0,
-                controlPoints: [{ x: 224.531619, y: 503.871734 }, { x: 154.852900, y: 319.090825 }],
+            {
+                fileId: 0,
+                regionId: -1,   // 2
+                regionInfo: {
+                    regionType: CARTA.RegionType.RECTANGLE,
+                    rotation: 0,
+                    controlPoints: [{ x: 224.531619, y: 503.871734 }, { x: 154.852900, y: 319.090825 }],
+                },
             },
-        },
-        {
-            fileId: 0,
-            regionId: -1,   // 3
-            regionInfo: {
-                regionType: CARTA.RegionType.ELLIPSE,
-                rotation: 0,
-                controlPoints: [{ x: 405.191764, y: 628.238373 }, { x: 105.581523, y: 79.772706 }],
+            {
+                fileId: 0,
+                regionId: -1,   // 3
+                regionInfo: {
+                    regionType: CARTA.RegionType.ELLIPSE,
+                    rotation: 0,
+                    controlPoints: [{ x: 405.191764, y: 628.238373 }, { x: 105.581523, y: 79.772706 }],
+                },
             },
-        },
-        {
-            fileId: 0,
-            regionId: -1,   // 4
-            regionInfo: {
-                regionType: CARTA.RegionType.POLYGON,
-                rotation: 0,
-                controlPoints: [{ x: 419.270873, y: 367.788882 }, { x: 330.113142, y: 285.669920 }, { x: 431.002154, y: 177.742140 }],
+            {
+                fileId: 0,
+                regionId: -1,   // 4
+                regionInfo: {
+                    regionType: CARTA.RegionType.POLYGON,
+                    rotation: 0,
+                    controlPoints: [{ x: 419.270873, y: 367.788882 }, { x: 330.113142, y: 285.669920 }, { x: 431.002154, y: 177.742140 }],
+                },
             },
-        },
-    ],
-    exportRegion:
-    [
-        {
-            coordType: CARTA.CoordinateType.WORLD,
-            file: "M17_SWex_test_world.reg",
-            fileId: 0,
-            type: CARTA.FileType.DS9_REG,
-            regionStyles: {
-                '1': { color: "#2EE6D6", dashList: [], lineWidth: 2, name: "" },
-                '2': { color: "#2EE6D6", dashList: [], lineWidth: 2, name: "" },
-                '3': { color: "#2EE6D6", dashList: [], lineWidth: 2, name: "" },
-                '4': { color: "#2EE6D6", dashList: [], lineWidth: 2, name: "" },
+        ],
+        exportRegion:
+        [
+            {
+                coordType: CARTA.CoordinateType.WORLD,
+                file: "M17_SWex_test_world.crtf",
+                fileId: 0,
+                type: CARTA.FileType.CRTF,
+                regionStyles: {
+                    '1': { color: "#2EE6D6", dashList: [], lineWidth: 2, name: "" },
+                    '2': { color: "#2EE6D6", dashList: [], lineWidth: 2, name: "" },
+                    '3': { color: "#2EE6D6", dashList: [], lineWidth: 2, name: "" },
+                    '4': { color: "#2EE6D6", dashList: [], lineWidth: 2, name: "" },
+                },
             },
-        },
-    ],
-    exportRegionAck:
-    [
-        {
-            success: true,
-            contents: [],
-        },
-    ],
-    importRegion:
-    [
-        {
-            directory: saveSubdirectory,
-            contents: [],
-            file: "M17_SWex_test_world.reg",
-            groupId: 0,
-            type: CARTA.FileType.DS9_REG,
-        },
-    ],
+        ],
+        exportRegionAck:
+        [
+            {
+                success: true,
+                contents: [],
+            },
+        ],
+        importRegion:
+        [
+            {
+                directory: saveSubdirectory,
+                contents: [],
+                file: "M17_SWex_test_world.crtf",
+                groupId: 0,
+                type: CARTA.FileType.CRTF,
+            },
+        ],
 };
 
 let platformOS: String;
 let basepath: string;
 let isRedHat9: boolean;
-describe("FITS_DS9_REGION_EXPORT_IMPORT_MATCHING test: check the difference (precision) exported/imported region", () => {
+describe("FITS_REGION_EXPORT_IMPORT_MATCHING test: check the difference (precision) exported/imported region", () => {
     const msgController = MessageController.Instance;
     describe(`Register a session`, () => {
         beforeAll(async ()=> {
