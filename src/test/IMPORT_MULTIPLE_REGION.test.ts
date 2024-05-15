@@ -99,7 +99,7 @@ let assertItem: AssertItem = {
     },
     errorImportRegionAck: 
     {
-        message: "Import region failed: ",
+        message: "Import region failed:",
     },
 };
 
