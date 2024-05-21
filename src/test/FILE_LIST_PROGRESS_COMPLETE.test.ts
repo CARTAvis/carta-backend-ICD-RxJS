@@ -15,12 +15,12 @@ interface AssertItem {
 };
 
 let assertItem: AssertItem = {
-    filelist: { directory: testSubdirectory, filterMode: 0 },
-    checkBackendlist: { directory: testBackendSubdirectory, filterMode: 0},
+    filelist: { directory: testSubdirectory },
+    checkBackendlist: { directory: testBackendSubdirectory},
 };
 
 let basepath: string;
-describe("FILE_LIST_PROGRESS_CANCELLATION test: Test ListProgress & StopFileList ICD with loading the folder which contains many files.", () => {
+describe("FILE_LIST_PROGRESS_COMPLETE test: Test ListProgress with loading the folder which contains many files and wait until loading all files.", () => {
     const msgController = MessageController.Instance;
     describe(`Register a session`, () => {
         beforeAll(async ()=> {
@@ -40,14 +40,10 @@ describe("FILE_LIST_PROGRESS_CANCELLATION test: Test ListProgress & StopFileList
                 msgController.closeFile(-1);
             }, connectTimeout);
 
-            let temp: any;
-            test(`Receive a series of *One* ListProgress than requst StopFileList:`,async()=>{
-                msgController.getFileList(assertItem.filelist.directory, assertItem.filelist.filterMode);
-                temp = await Stream(CARTA.ListProgress, 1);
-                if (temp[0].percentage != undefined) {
-                    console.log("List Progress: ", temp[0].percentage, "%");
-                }
-                msgController.cancelRequestingFileList(0);
+            let Response: any;
+            test(`Receive a series of ListProgress until the backend sent FileListResponse:`,async()=>{
+                Response = await msgController.getFileList(assertItem.filelist.directory, assertItem.filelist.filterMode);
+                expect(Response.success).toEqual(true);
             },openLargeFilesTimeout);
 
             test(`Check the backend is still alive:`, async () => {                
