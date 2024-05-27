@@ -12,7 +12,6 @@ let readFileTimeout: number = config.timeout.readFile;
 let saveFileTimeout: number = config.timeout.saveFile;
 
 interface AssertItem {
-    registerViewer: CARTA.IRegisterViewer;
     precisionDigit?: number;
     filelist: CARTA.IFileListRequest;
     fileOpen: CARTA.IOpenFile;
@@ -22,11 +21,6 @@ interface AssertItem {
     shapeSize: string[]
 }
 let assertItem: AssertItem = {
-    registerViewer: {
-        sessionId: 0,
-        apiKey: "",
-        clientFeatureFlags: 5,
-    },
     precisionDigit: 4,
     filelist: { directory: testSubdirectory },
     fileOpen: {

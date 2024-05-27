@@ -14,7 +14,7 @@
         "save": "set_QA/tmp",
         "save_rhel9": "set_QA/tmp/rhel9",
         "concat_stokes": "set_StokesCube",
-        "large_files": "set_lotsFiles2",
+        "large_files": "set_QA/set_lotsFiles2",
         "compressed_fits": "set_compressed_fits"
     },
     "timeout": {
