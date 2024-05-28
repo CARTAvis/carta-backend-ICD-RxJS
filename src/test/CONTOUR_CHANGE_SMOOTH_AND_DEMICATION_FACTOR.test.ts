@@ -186,7 +186,7 @@ describe("CONTOUR_CHANGE_SMOOTH_MODE_FACTOR: Testing Contour with different Smoo
                 let ContourImageDataArray = [];
                 let ContourImageData : any;
                 let ContourImageDataProgress1: any;
-                test(`(Case ${index+2}: Set Smoothing factor of ${contour.smoothingFactor} & Decimation factor of ${contour.decimationFactor}):t`, async () => {
+                test(`(Case ${index+1}: Set Smoothing factor of ${contour.smoothingFactor} & Decimation factor of ${contour.decimationFactor}):t`, async () => {
                     msgController.setContourParameters(assertItem.setContour[index]);
                     let ContourImageDataPromise = new Promise((resolve)=>{
                         msgController.contourStream.subscribe({
@@ -200,35 +200,36 @@ describe("CONTOUR_CHANGE_SMOOTH_MODE_FACTOR: Testing Contour with different Smoo
                     ContourImageDataProgress1 = ContourImageData.filter(data => data.progress == 1);
                 }, contourTimeout);
 
-                test(`Case ${index+2}: fileId = ${contour.fileId}`, () => {
+                test(`Case ${index+1}: fileId = ${contour.fileId}`, () => {
                     expect(ContourImageDataProgress1[0].fileId).toEqual(contour.fileId);
                 });
 
-                test(`Case ${index+2}: referenceFileId = ${contour.referenceFileId}`, () => {
+                test(`Case ${index+1}: referenceFileId = ${contour.referenceFileId}`, () => {
                     expect(ContourImageDataProgress1[0].referenceFileId).toEqual(contour.referenceFileId);
                 });
 
-                test(`Case ${index+2}: progress = 1`, () => {
+                test(`Case ${index+1}: progress = 1`, () => {
                     expect(ContourImageDataProgress1[0].progress).toEqual(1);
                 });
 
-                test(`Case ${index+2}: len(contourSet) = 1`, () => {
+                test(`Case ${index+1}: len(contourSet) = 1`, () => {
                     expect(ContourImageDataProgress1[0].contourSets.length).toEqual(1);
                 });
 
-                test(`Case ${index+2}: contourSets[0].level = ${assertItem.contourImageData[index].contourSets[0].level}`, () => {
+                test(`Case ${index+1}: contourSets[0].level = ${assertItem.contourImageData[index].contourSets[0].level}`, () => {
                     expect(ContourImageDataProgress1[0].contourSets[0].level).toEqual(assertItem.contourImageData[index].contourSets[0].level);
                 });
 
-                test(`Case ${index+2}: contourSets[0].decimationFactor = ${assertItem.contourImageData[index].contourSets[0].decimationFactor}`, () => {
+                test(`Case ${index+1}: contourSets[0].decimationFactor = ${assertItem.contourImageData[index].contourSets[0].decimationFactor}`, () => {
                     expect(ContourImageDataProgress1[0].contourSets[0].decimationFactor).toEqual(assertItem.contourImageData[index].contourSets[0].decimationFactor);
                 });
 
-                test(`Case ${index+2}: contourSets[0].uncompressedCoordinatesSize = ${assertItem.contourImageData[index].contourSets[0].uncompressedCoordinatesSize}`, () => {
+                test(`Case ${index+1}: contourSets[0].uncompressedCoordinatesSize = ${assertItem.contourImageData[index].contourSets[0].uncompressedCoordinatesSize}`, () => {
                     expect(ContourImageDataProgress1[0].contourSets[0].uncompressedCoordinatesSize).toEqual(assertItem.contourImageData[index].contourSets[0].uncompressedCoordinatesSize);
                 });
 
-                test(`Case ${index+2}: Check rawCoordinates[index] value`, () => {
+                test(`Case ${index+1}: Check rawCoordinates[index] value`, () => {
+                    console.log(ContourImageDataProgress1[0].contourSets[0].rawCoordinates.length);
                     assertItem.contourImageData[index].rawCoordinatesIndex.map((input, idx) => {
                         expect(ContourImageDataProgress1[0].contourSets[0].rawCoordinates[input]).toEqual(assertItem.contourImageData[index].rawCoordinatesArray[idx]);
                     })
