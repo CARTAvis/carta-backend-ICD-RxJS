@@ -2,6 +2,7 @@ import { CARTA } from "carta-protobuf";
 import { checkConnection, Stream} from './myClient';
 import { MessageController } from "./MessageController";
 import config from "./config.json";
+import { take } from 'rxjs/operators';
 
 let testServerUrl = config.serverURL0;
 let testSubdirectory = config.path.QA;
@@ -217,7 +218,26 @@ describe("MULTI-SPECTRAL-PROFILE-IMAGE: Test plotting the multi-spectral profile
                 })
             });
 
+            let regionHistogramData = [];
+            let SpatialProfileData = [];
             test(`Match spatial and spectral of two images`, async () => {
+                let regionHistogramDataPromise = new Promise((resolve)=>{
+                    msgController.histogramStream.pipe(take(1)).subscribe({
+                        next: (data) => {
+                            regionHistogramData.push(data)
+                            resolve(regionHistogramData)
+                        }
+                    })
+                });
+
+                let SpatialProfileDataPromise = new Promise((resolve)=>{
+                    msgController.spatialProfileStream.pipe(take(1)).subscribe({
+                        next: (data) => {
+                            SpatialProfileData.push(data)
+                            resolve(SpatialProfileData)
+                        }
+                    })
+                });
                 msgController.setCursor(assertItem.setCursor[0].fileId, assertItem.setCursor[0].point.x, assertItem.setCursor[0].point.y);
                 msgController.setCursor(assertItem.setCursor[1].fileId, assertItem.setCursor[1].point.x, assertItem.setCursor[1].point.y);
 
@@ -227,9 +247,9 @@ describe("MULTI-SPECTRAL-PROFILE-IMAGE: Test plotting the multi-spectral profile
                 expect(receiveValue).toContain(assertItem.SpatialProfileData[1].value);
 
                 msgController.setChannels(assertItem.setImageChannel[0]);
-                let RegionHistogramData5 = await Stream(CARTA.RegionHistogramData, 1);
-                let spectralProfileDataResponse5 = await Stream(CARTA.SpatialProfileData, 1);
-                let RasterTileDataResponse5 = await Stream(CARTA.RasterTileData,assertItem.addTilesReq[3].tiles.length + 2);
+                let RasterTileDataResponse5 = await Stream(CARTA.RasterTileData, assertItem.addTilesReq[3].tiles.length + 2);
+                let RegionHistogramData5 = await regionHistogramDataPromise;
+                let spectralProfileDataResponse5 = await SpatialProfileDataPromise;
                 let total5Count = RegionHistogramData5.length + spectralProfileDataResponse5.length + RasterTileDataResponse5.length
                 expect(total5Count).toEqual(5);
             });
