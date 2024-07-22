@@ -50,6 +50,7 @@
         "concatStokes": 3000,
         "openLargeFiles": 60000,
         "pvRequest": 60000,
+        "hips": 10000,
         "imageFitting": 100000,
         "vectorOverlay": 6000,
         "firstHistogramCancellation": 100000,
