@@ -2,6 +2,7 @@ import {action, makeObservable, observable, runInAction} from "mobx";
 import {CARTA} from "carta-protobuf";
 import {Subject, throwError} from "rxjs";
 import { mapToObject } from "./parsing";
+import IRegionInfo = CARTA.IRegionInfo;
 const WebSocket = require("ws");
 
 export enum ConnectionStatus {
@@ -242,7 +243,7 @@ export class MessageController {
         this.endToEndPing = this.lastPongTime - this.lastPingTime;
     };
 
-    async getFileList(directory: string, filterMode: CARTA.FileListFilterMode): Promise<CARTA.IFileListResponse> {
+    async getFileList(directory: string | null, filterMode: CARTA.FileListFilterMode): Promise<CARTA.IFileListResponse> {
         if (this.connectionStatus !== ConnectionStatus.ACTIVE) {
             throw new Error("Not connected");
         } else {
@@ -259,7 +260,7 @@ export class MessageController {
         }
     }
 
-    async getRegionList(directory: string, filterMode: CARTA.FileListFilterMode): Promise<CARTA.IRegionListResponse> {
+    async getRegionList(directory: string | null, filterMode: CARTA.FileListFilterMode): Promise<CARTA.IRegionListResponse> {
         if (this.connectionStatus !== ConnectionStatus.ACTIVE) {
             throw new Error("Not connected");
         } else {
@@ -276,7 +277,7 @@ export class MessageController {
         }
     }
 
-    async getCatalogList(directory: string, filterMode: CARTA.FileListFilterMode): Promise<CARTA.ICatalogListResponse> {
+    async getCatalogList(directory: string | null, filterMode: CARTA.FileListFilterMode): Promise<CARTA.ICatalogListResponse> {
         if (this.connectionStatus !== ConnectionStatus.ACTIVE) {
             throw new Error("Not connected");
         } else {
@@ -293,7 +294,7 @@ export class MessageController {
         }
     }
 
-    async getFileInfo(directory: string, file: string, hdu: string): Promise<CARTA.IFileInfoResponse> {
+    async getFileInfo(directory: string | null | undefined, file: string | null | undefined, hdu: string | null | undefined): Promise<CARTA.IFileInfoResponse> {
         if (this.connectionStatus !== ConnectionStatus.ACTIVE) {
             throw new Error("Not connected");
         } else {
@@ -311,7 +312,7 @@ export class MessageController {
         }
     }
 
-    async getRegionFileInfo(directory: string, file: string): Promise<CARTA.IRegionFileInfoResponse> {
+    async getRegionFileInfo(directory: string | null | undefined, file: string | null | undefined): Promise<CARTA.IRegionFileInfoResponse> {
         if (this.connectionStatus !== ConnectionStatus.ACTIVE) {
             throw new Error("Not connected");
         } else {
@@ -328,7 +329,7 @@ export class MessageController {
         }
     }
 
-    async getCatalogFileInfo(directory: string, name: string): Promise<CARTA.ICatalogFileInfoResponse> {
+    async getCatalogFileInfo(directory: string | null | undefined, name: string | null | undefined): Promise<CARTA.ICatalogFileInfoResponse> {
         if (this.connectionStatus !== ConnectionStatus.ACTIVE) {
             throw new Error("Not connected");
         } else {
@@ -526,7 +527,7 @@ export class MessageController {
         return false;
     }
 
-    spectialSetRegion(fileId: number, regionId: number, region: RegionStore, isRequestingPreview?: boolean): boolean {
+    spectialSetRegion(fileId: number, regionId: number, region: IRegionInfo, isRequestingPreview?: boolean): boolean {
         if (this.connectionStatus === ConnectionStatus.ACTIVE) {
             const message = CARTA.SetRegion.create({
                 fileId,
@@ -547,7 +548,7 @@ export class MessageController {
         return false;
     }
 
-    async setRegion(fileId: number, regionId: number, region: RegionStore, isRequestingPreview?: boolean): Promise<CARTA.ISetRegionAck> {
+    async setRegion(fileId: number, regionId: number, region: IRegionInfo, isRequestingPreview?: boolean): Promise<CARTA.ISetRegionAck> {
         if (this.connectionStatus !== ConnectionStatus.ACTIVE) {
             throw new Error("Not connected");
         } else {
