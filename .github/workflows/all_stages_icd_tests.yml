@@ -92,9 +92,7 @@ jobs:
           rm -rf $BUILD_DIR && mkdir -p $BUILD_DIR
           cd source ; git submodule update --init --recursive
           apptainer exec --bind $GITHUB_WORKSPACE:$GITHUB_WORKSPACE --pwd $SRC_DIR ${{ matrix.image }} /bin/bash -c "\
-            ls && pwd && \
             cd $BUILD_DIR && \
-            ls && pwd && \
             cmake $SRC_DIR \
               -Dtest=on \
               -DCMAKE_BUILD_TYPE=Debug \
