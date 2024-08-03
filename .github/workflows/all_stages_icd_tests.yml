@@ -57,6 +57,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          repository: CARTAvis/carta-backend
+          ref:  ${{ env.CARTA_BACKEND_BRANCH_NAME }}
           path: source
 
       - name: System information (macOS)
