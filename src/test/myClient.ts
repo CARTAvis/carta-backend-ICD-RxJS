@@ -52,17 +52,28 @@ function Stream(cartaType: any, InputNum?: number) {
                     ack.push(data)
                 })
                 break;
-            case CARTA.MomentProgress:
-                let MomentProgressData: any[] = [];
-                let resMomentProgressData = msgController.momentProgressStream.pipe(take(InputNum));
-                resMomentProgressData.subscribe(data => {
-                    MomentProgressData.push(data);
+            case CARTA.ListProgress:
+                let ListProgressData: any[] = [];
+                let resListProgressData = msgController.listProgressStream.pipe(take(InputNum));
+                resListProgressData.subscribe(data => {
+                    ListProgressData.push(data);
                     _count++;
                     if (_count === InputNum) {
-                        resolve(MomentProgressData);
+                        resolve(ListProgressData);
                     }
                 });
                 break;
+                case CARTA.MomentProgress:
+                    let MomentProgressData: any[] = [];
+                    let resMomentProgressData = msgController.momentProgressStream.pipe(take(InputNum));
+                    resMomentProgressData.subscribe(data => {
+                        MomentProgressData.push(data);
+                        _count++;
+                        if (_count === InputNum) {
+                            resolve(MomentProgressData);
+                        }
+                    });
+                    break;
             case CARTA.ErrorData:
                 let ErrorData: CARTA.IErrorData[] = [];
                 let resErrorData = msgController.errorStream.pipe(take(InputNum));
@@ -120,12 +131,12 @@ function Stream(cartaType: any, InputNum?: number) {
                 break;
             case CARTA.CatalogFilterResponse:
                 let catalogStream : any [] = [];
-                let resCatalogStream = msgController.catalogStream.pipe(take(InputNum));
-                resCatalogStream.subscribe(data => {
-                    catalogStream.push(data);
-                    _count++;
-                    if (_count === InputNum) {
-                        resolve(catalogStream);
+                let resCatalogStream = msgController.catalogStream.subscribe({
+                    next: (data) => {
+                        catalogStream.push(data);
+                        if (data.progress === 1) {
+                            resolve(catalogStream)
+                        }
                     }
                 })
                 break;
