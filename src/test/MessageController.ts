@@ -364,7 +364,7 @@ export class MessageController {
         }
     }
 
-    async exportRegion(directory: string, file: string, type: CARTA.FileType, coordType: CARTA.CoordinateType, fileId: number, regionStyles: Map<number, CARTA.IRegionStyle>, overwrite: boolean = false): Promise<CARTA.IExportRegionAck> {
+    async exportRegion(directory: string, file: string, type: CARTA.FileType, coordType: CARTA.CoordinateType, fileId: number, regionStyles: Map<number, CARTA.IRegionStyle>, overwrite: boolean = true): Promise<CARTA.IExportRegionAck> {
         if (this.connectionStatus !== ConnectionStatus.ACTIVE) {
             throw new Error("Not connected");
         } else {
@@ -472,7 +472,7 @@ export class MessageController {
         stokes?: number[],
         keepDegenerate?: boolean,
         restFreq?: number,
-        overwrite: boolean = false
+        overwrite: boolean = true
     ): Promise<CARTA.ISaveFileAck> {
         if (this.connectionStatus !== ConnectionStatus.ACTIVE) {
             throw new Error("Not connected");
