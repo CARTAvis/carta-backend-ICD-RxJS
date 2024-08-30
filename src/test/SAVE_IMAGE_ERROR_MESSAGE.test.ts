@@ -57,7 +57,7 @@ let assertItem: AssertItem = {
             keepDegenerate: true,
         },
     ],
-    errorMessage:"The selected region is entirely outside the image"
+    errorMessage: "The selected region is entirely outside the image."
 }
 
 let basepath: string;
@@ -94,7 +94,7 @@ describe("SAVE_IMAGE_ERROR_MESSAGE: Exporting of a region out of the image", () 
                 try { 
                     let saveFileResponse = await msgController.saveFile(SaveImageInput.fileId, tmpdirectory, SaveImageInput.outputFileName, SaveImageInput.outputFileType, SaveImageInput.regionId, SaveImageInput.channels, SaveImageInput.stokes, SaveImageInput.keepDegenerate, SaveImageInput.restFreq);
                 } catch (err) {
-                    expect(err).toContain(assertItem.errorMessage);
+                    expect(err.message).toContain(assertItem.errorMessage);
                 }
             }, saveFileTimeout);
         });
