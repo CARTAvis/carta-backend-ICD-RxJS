@@ -37,6 +37,7 @@ let assertItem: AssertItem = {
         moments: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
         pixelRange: { min: 0.1, max: 1.0 },
         spectralRange: { min: 73, max: 114 },
+        restFreq: 230538000000,
     },
 };
 
