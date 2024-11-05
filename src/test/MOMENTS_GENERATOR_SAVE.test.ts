@@ -40,6 +40,7 @@ let assertItem: AssertItem = {
         moments: [0, 1,],
         pixelRange: { min: 0.1, max: 1.0 },
         spectralRange: { min: 73, max: 114 },
+        restFreq: 230538000000,
     },
     saveFile: [
         [
