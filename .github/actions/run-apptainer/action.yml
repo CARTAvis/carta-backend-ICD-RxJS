@@ -18,6 +18,8 @@ runs:
   using: 'composite'
   steps:
     - run: |
+        set -eo pipefail  # Make script exit on any error
+    
         SRC_DIR=$GITHUB_WORKSPACE/source
         BUILD_DIR=$GITHUB_WORKSPACE/build-${{ inputs.os_version }}
         TEST_STAGE="$BUILD_DIR/ICD-RxJS/ICD_test_stages/${{ inputs.test_stage_name }}.tests"
