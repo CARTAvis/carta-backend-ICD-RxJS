@@ -62,11 +62,14 @@ runs:
             pwd && \
             cat $TEST_STAGE && \
             failed_tests=() && \
-            while IFS= read -r test_file || [[ -n "\$test_file" ]]; do
-              if ! CI=true npm test -- \"\$test_file\"; then
-                failed_tests+=(\"\$test_file\")
+            mapfile -t test_files < $TEST_STAGE && \
+            for test_file in \"\${test_files[@]}\"; do
+              if [ -n \"\$test_file\" ]; then  # Skip empty lines
+                if ! CI=true npm test -- \"\$test_file\"; then
+                  failed_tests+=(\"\$test_file\")
+                fi
               fi
-            done < $TEST_STAGE && \
+            done && \
             if [ \${#failed_tests[@]} -ne 0 ]; then
               echo \"The following tests failed:\" && \
               printf '%s\n' \"\${failed_tests[@]}\" && \
