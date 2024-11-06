@@ -24,6 +24,19 @@ runs:
         BUILD_DIR=$GITHUB_WORKSPACE/build-${{ inputs.os_version }}
         TEST_STAGE="$BUILD_DIR/ICD-RxJS/ICD_test_stages/${{ inputs.test_stage_name }}.tests"
         LOG_FILE="/tmp/carta_icd_${{ inputs.os_version }}_${{ inputs.test_stage_name }}.log"
+        
+        # Function to cleanup backend process
+        cleanup() {
+          local backend_pid=$(pgrep -f "carta_backend.*${{ inputs.port }}" | head -n 1)
+          if [ ! -z "$backend_pid" ]; then
+            echo "Cleaning up carta_backend (PID: $backend_pid)"
+            kill -9 "$backend_pid" || true
+          fi
+        }
+        
+        # Set trap for cleanup
+        trap cleanup EXIT
+        
         apptainer exec \
           --bind $GITHUB_WORKSPACE:$GITHUB_WORKSPACE \
           --bind /images:/images \
@@ -48,7 +61,15 @@ runs:
             cd $BUILD_DIR/ICD-RxJS && \
             pwd && \
             cat $TEST_STAGE && \
+            failed_tests=() && \
             while IFS= read -r test_file || [[ -n "\$test_file" ]]; do
-              CI=true npm test -- "\$test_file"
-            done < $TEST_STAGE"
+              if ! CI=true npm test -- \"\$test_file\"; then
+                failed_tests+=(\"\$test_file\")
+              fi
+            done < $TEST_STAGE && \
+            if [ \${#failed_tests[@]} -ne 0 ]; then
+              echo \"The following tests failed:\" && \
+              printf '%s\n' \"\${failed_tests[@]}\" && \
+              exit 1
+            fi"
       shell: bash
